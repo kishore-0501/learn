@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudLearn</title>
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#f4f6f9;
+}
+
+/* NAVBAR */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 50px;
+background:white;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo{
+font-size:24px;
+font-weight:bold;
+color:#4facfe;
+}
+
+.nav-links a{
+margin-left:20px;
+text-decoration:none;
+font-weight:500;
+color:#333;
+}
+
+.join-btn{
+background:#4facfe;
+color:white;
+padding:8px 15px;
+border-radius:5px;
+}
+
+/* HERO SECTION */
+
+.hero{
+height:80vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:white;
+background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
+url("https://images.unsplash.com/photo-1523240795612-9a054b0db644");
+background-size:cover;
+background-position:center;
+}
+
+.hero h1{
+font-size:50px;
+margin-bottom:10px;
+}
+
+.hero p{
+font-size:20px;
+}
+
+.hero button{
+margin-top:20px;
+padding:12px 30px;
+border:none;
+background:#ff7b00;
+color:white;
+font-size:18px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* COURSES SECTION */
+
+.courses{
+padding:50px;
+text-align:center;
+}
+
+.course-grid{
+display:flex;
+justify-content:center;
+gap:25px;
+margin-top:30px;
+flex-wrap:wrap;
+}
+
+.course-card{
+background:white;
+padding:25px;
+width:200px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+transition:0.3s;
+}
+
+.course-card:hover{
+transform:translateY(-5px);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<div class="logo">CloudLearn</div>
+
+<div class="nav-links">
+
+<a href="#" onclick="openLogin()">Sign In</a>
+
+<a class="join-btn" href="#" onclick="openRegister()">Join for Free</a>
+
+</div>
+
+</div>
+
+<!-- HERO -->
+
+<div class="hero">
+  <div>
+    <h1>Learn Cloud & Tech Skills</h1>
+    <p>Build your future with online courses</p>
+
+    <!-- SEARCH BAR -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search for anything...">
+      <button onclick="searchCourses()">Search</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- POPULAR COURSES -->
+
+<div class="courses">
+
+<h2>Popular Courses</h2>
+
+<div class="course-grid">
+
+<div class="course-card">
+<h3>AWS</h3>
+<p>Learn cloud computing fundamentals</p>
+</div>
+
+<div class="course-card">
+<h3>Docker</h3>
+<p>Containerize applications easily</p>
+</div>
+
+<div class="course-card">
+<h3>Python</h3>
+<p>Programming for beginners</p>
+</div>
+
+<div class="course-card">
+<h3>DevOps</h3>
+<p>CI/CD and automation basics</p>
+</div>
+
+</div>
+
+</div>
+
+<!-- LOGIN POPUP -->
+
+<div id="loginModal" class="modal">
+
+<div class="modal-content">
+
+<span class="close" onclick="closeLogin()">&times;</span>
+
+<h2>Sign In</h2>
+
+<input type="email" id="loginEmail" placeholder="Enter Email">
+
+<input type="password" id="loginPassword" placeholder="Enter Password">
+
+<button onclick="loginUser()">Login</button>
+
+</div>
+
+</div>
+
+<!-- REGISTER POPUP -->
+<div id="registerModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeRegister()">&times;</span>
+    <h2>Join for Free</h2>
+
+    <input type="text" id="registerName" placeholder="Enter Full Name">
+    <input type="email" id="registerEmail" placeholder="Enter Email">
+    <input type="text" id="registerPhone" placeholder="Enter Phone Number">
+    <input type="password" id="registerPassword" placeholder="Enter Password">
+
+    <select id="registerRole" style="width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc;">
+      <option value="student">Student</option>
+      <option value="instructor">Instructor</option>
+    </select>
+
+    <button onclick="registerUser()">Register</button>
+  </div>
+</div>
+
+<!-- LOGIN SCRIPT -->
+
+<script>
+function openLogin() {
+    document.getElementById("loginModal").style.display = "block";
+}
+
+function closeLogin() {
+    document.getElementById("loginModal").style.display = "none";
+}
+
+function openRegister() {
+    document.getElementById("registerModal").style.display = "block";
+}
+
+function closeRegister() {
+    document.getElementById("registerModal").style.display = "none";
+}
+
+async function loginUser() {
+    let email = document.getElementById("loginEmail").value.trim();
+    let password = document.getElementById("loginPassword").value.trim();
+
+    let response = await fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    });
+
+    let result = await response.json();
+    alert(result.message);
+
+    if (result.status === "approved") {
+        localStorage.setItem("currentUser", email);
+
+        if (result.role === "instructor") {
+            window.location = "/instructor";
+        } else {
+            window.location = "/courses-page";
+        }
+    }
+}
+
+async function registerUser() {
+    let name = document.getElementById("registerName").value.trim();
+    let email = document.getElementById("registerEmail").value.trim();
+    let phone = document.getElementById("registerPhone").value.trim();
+    let password = document.getElementById("registerPassword").value.trim();
+    let role = document.getElementById("registerRole").value;
+
+    if (!name || !email || !phone || !password) {
+        alert("All fields are required");
+        return;
+    }
+
+    let response = await fetch("/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            phone: phone,
+            password: password,
+            role: role
+        })
+    });
+
+    let result = await response.json();
+    alert(result.message);
+
+    if (result.status === "approved") {
+        localStorage.setItem("currentUser", email);
+        closeRegister();
+
+        if (role === "instructor") {
+            window.location = "/instructor";
+        } else {
+            window.location = "/courses-page";
+        }
+    }
+}
+
+function searchCourses() {
+    let query = document.getElementById("searchInput").value.trim();
+
+    if (query === "") {
+        alert("Please enter something to search!");
+        return;
+    }
+
+    window.location = "/courses-page?search=" + encodeURIComponent(query);
+}
+</script>
+
+</body>
+</html>
